@@ -392,7 +392,7 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
 
         let emptyCellView = ALKEmptyView.instanceFromNib()
 
-        let noConversationLabelText = localizedString(forKey: SystemMessage.ChatList.NoConversationsLabelText, withDefaultValue: SystemMessage.ChatList.NoConversationsLabelText, fileName: localizedStringFileName)
+        let noConversationLabelText = localizedString(forKey: "NoConversationsLabelText", withDefaultValue: SystemMessage.ChatList.NoConversationsLabelText, fileName: localizedStringFileName)
 
         emptyCellView.conversationLabel.text = noConversationLabelText
 
