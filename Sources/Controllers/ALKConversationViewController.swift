@@ -87,7 +87,6 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
 
     fileprivate let titleButton : UIButton = {
         let titleButton = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-        titleButton.setTitleColor(UIColor.black, for: .normal)
         titleButton.titleLabel?.font  = UIFont.boldSystemFont(ofSize: 17.0)
         return titleButton
     }()
@@ -480,6 +479,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
     private func setupNavigation() {
 
         titleButton.setTitle(self.title, for: .normal)
+        titleButton.setTitleColor(self.configuration.navigationBarTitleColor, for: .normal)
         titleButton.addTarget(self, action: #selector(showParticipantListChat), for: .touchUpInside)
         titleButton.isEnabled = isGroupDetailActionEnabled
         self.navigationItem.titleView = titleButton

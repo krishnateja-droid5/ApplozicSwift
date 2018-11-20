@@ -36,6 +36,8 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
     
     fileprivate var localizedStringFileName: String!
 
+    
+
     let tableView : UITableView = {
         let tv = UITableView(frame: .zero, style: .plain)
         tv.estimatedRowHeight = 75
@@ -209,7 +211,10 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
 
         let back = localizedString(forKey: "Back", withDefaultValue: SystemMessage.ChatList.leftBarBackButton, fileName: localizedStringFileName)
         let leftBarButtonItem = UIBarButtonItem(title: back, style: .plain, target: self, action: #selector(customBackAction))
-        navigationItem.leftBarButtonItem = leftBarButtonItem
+
+        if !configuration.hideBackButtonInConversationList {
+            navigationItem.leftBarButtonItem = leftBarButtonItem
+        }
 
         #if DEVELOPMENT
             let indicator = UIActivityIndicatorView(activityIndicatorStyle: .white)
@@ -233,9 +238,6 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
         tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         self.automaticallyAdjustsScrollViewInsets = false
         tableView.register(ALKChatCell.self)
-
-        let nib = UINib(nibName: "EmptyChatCell", bundle: Bundle.applozic)
-        tableView.register(nib, forCellReuseIdentifier: "EmptyChatCell")
         tableView.estimatedRowHeight = 0
     }
 
@@ -339,6 +341,8 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
         guard let chat = (searchActive ? searchFilteredChat[indexPath.row] as? ALMessage : viewModel.chatForRow(indexPath: indexPath)) as? ALMessage else {
             return UITableViewCell()
         }
+
+
         let cell: ALKChatCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
         cell.update(viewModel: chat, identity: nil)
 //        cell.setComingSoonDelegate(delegate: self.view)
@@ -386,16 +390,38 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
 
     open func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
 
-        let view = tableView.dequeueReusableCell(withIdentifier: "EmptyChatCell")?.contentView
-        if let tap = view?.gestureRecognizers?.first {
-            view?.removeGestureRecognizer(tap)
-        }
-        let tap = UITapGestureRecognizer.init(target: self, action: #selector(compose))
-        tap.numberOfTapsRequired = 1
+        let emptyCellView = ALKEmptyView.instanceFromNib()
 
-        view?.addGestureRecognizer(tap)
+        let noConversationLabelText = localizedString(forKey: SystemMessage.ChatList.NoConversationsLabelText, withDefaultValue: SystemMessage.ChatList.NoConversationsLabelText, fileName: localizedStringFileName)
+
+        emptyCellView.conversationLabel.text = noConversationLabelText
+
+        emptyCellView.startNewConversationButtonIcon.isHidden = configuration.hideStartNewInConverstionList
+
+        if !configuration.hideStartNewInConverstionList{
+            if let tap = emptyCellView.gestureRecognizers?.first {
+                emptyCellView.removeGestureRecognizer(tap)
+            }
+
+            let tap = UITapGestureRecognizer.init(target: self, action: #selector(compose))
+            tap.numberOfTapsRequired = 1
+
+            emptyCellView.addGestureRecognizer(tap)
+        }
+
+
+        return emptyCellView
+    }
+
+
+    func loadViewFromNib() -> UIView! {
+        let bundle = Bundle(for: type(of: self))
+        let nib = UINib(nibName: String(describing: type(of: self)), bundle: bundle)
+        let view = nib.instantiate(withOwner: self, options: nil)[0] as! UIButton
+
         return view
     }
+
 
     open func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return viewModel.numberOfRowsInSection(section: 0) == 0 ? 325 : 0
