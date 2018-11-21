@@ -36,8 +36,6 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
     
     fileprivate var localizedStringFileName: String!
 
-    
-
     let tableView : UITableView = {
         let tv = UITableView(frame: .zero, style: .plain)
         tv.estimatedRowHeight = 75
@@ -341,8 +339,6 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
         guard let chat = (searchActive ? searchFilteredChat[indexPath.row] as? ALMessage : viewModel.chatForRow(indexPath: indexPath)) as? ALMessage else {
             return UITableViewCell()
         }
-
-
         let cell: ALKChatCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
         cell.update(viewModel: chat, identity: nil)
 //        cell.setComingSoonDelegate(delegate: self.view)
